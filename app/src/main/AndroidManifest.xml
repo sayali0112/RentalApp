@@ -8,6 +8,9 @@
 
     <uses-permission android:name="android.car.permission.CAR_SPEED" />
     <uses-permission android:name="android.permission.READ_VEHICLE_SPEED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <application
         android:allowBackup="true"
@@ -20,19 +23,38 @@
         android:theme="@style/Theme.RentalCarApp"
         tools:targetApi="31">
         <activity
-            android:name=".userapp.RenterAppActivity"
-            android:exported="false" />
-        <activity
-            android:name=".hmiapp.HMIActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.RentalCarApp">
+            android:name=".controller.hmiapp.AlertPopupActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".controller.hmiapp.CarPropertyService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <activity
+            android:name=".controller.userapp.RenterAppActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".controller.hmiapp.AlertPopupActivity"
+            android:theme="@style/TransparentActivity"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:launchMode="singleInstance"
+            android:showOnLockScreen="true"
+            android:turnScreenOn="true"
+            android:exported="true"
+            tools:ignore="DuplicateActivity" />
     </application>
 
 </manifest>
