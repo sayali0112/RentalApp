@@ -3,7 +3,7 @@ package com.example.rentalcarapp.model
 /*
 * Provides AWS cloud services
 * */
-class AwsService : CommunicationChannelServices {
+object AwsService : CommunicationChannelServices {
 
     // Max speed limit
     private var maxSpeedLimit:Float? = null

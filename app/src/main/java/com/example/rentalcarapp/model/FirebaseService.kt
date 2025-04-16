@@ -3,7 +3,7 @@ package com.example.rentalcarapp.model
 /*
 * Provides Firebase cloud services
 * */
-class FirebaseService :CommunicationChannelServices{
+object FirebaseService :CommunicationChannelServices{
 
     // Max speed limit
     private var maxSpeedLimit:Float? = null

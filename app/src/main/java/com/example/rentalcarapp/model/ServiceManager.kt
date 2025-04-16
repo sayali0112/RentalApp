@@ -14,9 +14,9 @@ object ServiceManager {
         //Assuming, primarily firebase channel will use, if firebase having some issue then AWS
         // channel will use
         communicationChannel = if (service == "Firebase") {
-            FirebaseService()
+            FirebaseService
         } else {
-            AwsService()
+            AwsService
         }
         return communicationChannel
     }
