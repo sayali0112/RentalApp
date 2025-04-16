@@ -15,7 +15,7 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.example.rentalcarapp.model.ServerManager
+import com.example.rentalcarapp.model.ServiceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -95,11 +95,11 @@ class CarPropertyService : Service() {
         //Below method getMaxSpeedFromServer() will return max speed limit for particular user
         // based on userId from server(using firebase-- firebase cloud function)
         val maxSpeed: Float =
-            ServerManager.getCommunicationChannel("Firebase").getMaxSpeedLimit("UserId")
+            ServiceManager.getCommunicationChannel("Firebase").getMaxSpeedLimit("UserId")
         if (speed > maxSpeed) {
             //Below method is used to notify current speed to rental company admin portal(Firebase--
             // firebase cloud function/AWS)
-            ServerManager.getCommunicationChannel("Firebase").sendNotificationToServer("userid", speed)
+            ServiceManager.getCommunicationChannel("Firebase").sendNotificationToServer("userid", speed)
             // Show speed alert message to user(renter)
             showWarningMsg(maxSpeed)
         }

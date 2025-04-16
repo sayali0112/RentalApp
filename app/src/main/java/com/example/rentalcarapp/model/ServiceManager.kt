@@ -3,7 +3,7 @@ package com.example.rentalcarapp.model
 /*
 * This class is use to manage server communication channels.
 * */
-object ServerManager {
+object ServiceManager {
 
     private lateinit var communicationChannel: CommunicationChannelServices
 
