@@ -1,4 +1,4 @@
-package com.example.rentalcarapp.controller.hmiapp
+package com.example.rentalcarapp.controller
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -15,14 +15,14 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.example.rentalcarapp.model.CloudServices
+import com.example.rentalcarapp.model.ServerManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 /*
 * This service class is used to show alert message when vehicle speed exceeds max limit and also
-* notify to the fleet company.
+* notify to the rental company.
 * */
 class CarPropertyService : Service() {
 
@@ -87,29 +87,29 @@ class CarPropertyService : Service() {
     }
 
     /**
-     * This method will check current car speed with Max speed limit, then send alert to user and car
+     * This method will check current car speed with Max speed limit, then send alert msg to user and car
      * rental company
      * @param speed The current car speed
      */
     fun checkVehicleSpeed(speed: Float) {
         //Below method getMaxSpeedFromServer() will return max speed limit for particular user
         // based on userId from server(using firebase-- firebase cloud function)
-        val maxSpeed: Float = CloudServices.getMaxSpeedLimit("UserId")
-        // Check current car speed is > Max speed limit which is set by rental fleet company
+        val maxSpeed: Float =
+            ServerManager.getCommunicationChannel("Firebase").getMaxSpeedLimit("UserId")
         if (speed > maxSpeed) {
             //Below method is used to notify current speed to rental company admin portal(Firebase--
             // firebase cloud function/AWS)
-            CloudServices.notifyCurrentSpeedToServer(speed)
+            ServerManager.getCommunicationChannel("Firebase").sendNotificationToServer("userid", speed)
             // Show speed alert message to user(renter)
             showWarningMsg(maxSpeed)
         }
     }
 
     /*
-  * This function will showing waring msg to user when current speed exceeds max limit by starting
-  * popup activity
-  * @param carSpeed The max speed limit
-  */
+    * This function will showing waring msg to user when current speed exceeds max limit by starting
+    * popup activity
+    * @param carSpeed The max speed limit
+    */
     private fun showWarningMsg(carSpeed: Float) {
         val intent = Intent(this, AlertPopupActivity::class.java).apply {
             putExtra("carspeed", carSpeed)

@@ -1,10 +1,13 @@
-package com.example.rentalcarapp.controller.hmiapp
+package com.example.rentalcarapp.controller
 
 import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.WindowManager
 
+/*
+* Showing alert msg to user
+* */
 class AlertPopupActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
