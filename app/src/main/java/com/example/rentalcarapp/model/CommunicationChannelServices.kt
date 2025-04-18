@@ -7,8 +7,4 @@ interface CommunicationChannelServices {
 
     fun sendNotificationToServer(userId:String,carSpeed:Float)
 
-    fun setMaxSpeedLimit(userId:String)
-
-    fun getMaxSpeedLimit(userId:String):Float
-
 }

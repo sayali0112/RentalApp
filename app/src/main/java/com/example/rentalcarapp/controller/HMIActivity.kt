@@ -28,8 +28,8 @@ class HMIActivity : ComponentActivity() {
     }
 
     /*
-    * This function is use for user authentication on HMI app, either user can login using login
-    * credentials or using booking Id(OTP) which is provided by userApp(RenterApp).
+    * This function is use for user authentication on HMI app,user can login using either login
+    * credentials or booking Id(OTP) which is provided by userApp(RenterApp).
     */
     private fun userAuthentication() {
             //After successful authentication,user rental period will start
