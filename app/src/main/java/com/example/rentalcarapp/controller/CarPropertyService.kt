@@ -15,6 +15,9 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
 import com.example.rentalcarapp.model.MaxSpeedApis
 import com.example.rentalcarapp.model.ServiceManager
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +28,7 @@ import kotlinx.coroutines.launch
 * This service class is used to show alert message when vehicle speed exceeds max limit and also
 * notify to the rental company.
 * */
-class CarPropertyService : Service() {
+class CarPropertyService : LifecycleService() {
 
     /*
    * This variable is used to Initializing Car class object
@@ -37,9 +40,13 @@ class CarPropertyService : Service() {
     */
     private var carPropertyManager: CarPropertyManager? = null
 
+    private val CHANNEL_ID = "speed_channel"
+    private val NOTIFICATION_ID = 1
+
     override fun onCreate() {
         super.onCreate()
         initializer(this)
+        createNotificationChannel()
     }
 
     /*
@@ -52,15 +59,17 @@ class CarPropertyService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
         TODO()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+        startForegroundService()
         //Calling Car Apis on separate thread
-        GlobalScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             registerSpeedListener()
         }
-        startForegroundService()
         Log.d("MY ..Service", "running")
         return START_NOT_STICKY
     }
@@ -103,30 +112,33 @@ class CarPropertyService : Service() {
             // firebase cloud function/AWS)
             ServiceManager.getCommunicationChannel().sendNotificationToServer("userid", speed)
             // Show speed alert message to user(renter)
-            showWarningMsg(maxSpeed)
+            alertNotification("Warning: Speed exceeds $maxSpeed km/h!")
+        } else {
+            alertNotification("Speed monitoring service is running")
         }
     }
 
     /*
-    * This function will showing waring msg to user when current speed exceeds max limit by starting
-    * popup activity
-    * @param carSpeed The max speed limit
+    * This function will showing waring msg to user when current speed exceeds max speed limit
+    * @param message The max speed exceed msg
     */
-    private fun showWarningMsg(carSpeed: Float) {
-        val intent = Intent(this, AlertPopupActivity::class.java).apply {
-            putExtra("carspeed", carSpeed)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        }
-        startActivity(intent)
+    private fun alertNotification(message: String) {
+        val updatedNotification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Speed Monitor")
+            .setContentText(message)
+            .setSmallIcon(android.R.drawable.ic_dialog_alert)
+            .build()
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(NOTIFICATION_ID, updatedNotification)
     }
 
     /*
     * This function, Starts foreground service with notification
     * */
     private fun startForegroundService() {
-        createNotificationChannel()
         val notification = createNotification()
-        startForeground(123, notification)
+        startForeground(NOTIFICATION_ID, notification)
     }
 
     /*
@@ -137,7 +149,7 @@ class CarPropertyService : Service() {
         val pendingIntent = PendingIntent.getActivity(
             this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE
         )
-        return NotificationCompat.Builder(this, "my_channel_id")
+        return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Car Property Service")
             .setContentText("Service is running...")
             .setContentIntent(pendingIntent)
@@ -150,7 +162,7 @@ class CarPropertyService : Service() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "my_channel_id",
+                CHANNEL_ID,
                 "Foreground Service Channel",
                 NotificationManager.IMPORTANCE_LOW
             )
