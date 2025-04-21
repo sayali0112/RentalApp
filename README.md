@@ -6,7 +6,6 @@ Controller Module:-
 
 1. HMIActivity.kt :- It is responsible for starting rental session,by assuming bookingID is validated. Then started foreground service.
 2. CarPropertyService.kt :- It is responsible for showing alert popup based on current speed and max speed limit.
-3. AlertPopupActivity.kt :- Showing alert message to user.
 
 Model Module:-
 
